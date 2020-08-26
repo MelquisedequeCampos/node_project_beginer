@@ -1,46 +1,23 @@
 
 // Every MODEL should have a REPOSITORY to read, edit, delete the MODEL
 
-import { isEqual } from 'date-fns'
+
+import { EntityRepository, Repository } from 'typeorm'
+
 import Appointment from '../models/Appointments'
 
-// DTO: Data Tranfer Object
 
-interface CreateAppointmentDTO {
-    
-    provider: string,
-    date: Date
-}
+@EntityRepository(Appointment)
 
+class AppointmentsRepository extends Repository<Appointment> { //"parametro de tipagem"
 
-class AppointmentsRepository {
-    private Appointments: Appointment[]
+    public async findByDate(date: Date): Promise<Appointment | null> {
 
-    constructor() {
-        this.Appointments= []
-    }
+        const findAppointment = await this.findOne({ 
+            where: { date }
+        })
 
-    public all() {
-        return this.Appointments
-    }
-
-    public findByDate(date: Date): Appointment | null {
-
-        const findAppointment= this.Appointments.find(appointment => 
-            isEqual(date, appointment.date)
-        )
-        
         return findAppointment || null
-    }
-
-    public create({ provider, date }: CreateAppointmentDTO ): Appointment {
-
-    const appointment = new Appointment({provider, date})
-    
-    this.Appointments.push(appointment)
-
-    return appointment
-
     }
 }
 
